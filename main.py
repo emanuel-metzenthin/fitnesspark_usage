@@ -40,7 +40,9 @@ def fetch_visitors(urls):
 # List of URLs to fetch data from
 urls = [
     'https://www.fitnesspark.ch/fitnessparks/zuerich-stadelhofen/ueber-den-park/',
-    'https://www.fitnesspark.ch/fitnessparks/zuerich-stockerhof/ueber-den-park/'
+    'https://www.fitnesspark.ch/fitnessparks/zuerich-stockerhof/ueber-den-park/',
+    'https://www.fitnesspark.ch/fitnessparks/zuerich-sihlcity/ueber-den-park/',
+    'https://www.fitnesspark.ch/fitnessparks/puls-5-zuerich/ueber-den-park/'
 ]
 
 fetch_visitors(urls)
