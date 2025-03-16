@@ -3,7 +3,7 @@ name: Fetch Visitors Data
 on:
   schedule:
     # Run every hour (adjust cron expression as needed)
-    - cron: '0 * * * *'
+    - cron: '*/15 * * * *'
 
 jobs:
   fetch-data:
