@@ -24,7 +24,7 @@ jobs:
         pip install selenium schedule
 
     - name: Run Python script
-      run: python fetch_visitors.py
+      run: python main.py
 
     - name: Commit CSV file
       run: |
