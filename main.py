@@ -3,6 +3,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import csv
 import time
+import os
+
+os.environ["TZ"] = "Europe/Paris"
 
 # Function to fetch the number of visitors from multiple URLs
 def fetch_visitors(urls):
