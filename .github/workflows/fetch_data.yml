@@ -24,12 +24,15 @@ jobs:
         pip install selenium schedule
 
     - name: Run Python script
-      run: python main.py
+      run: |
+        python main.py
+        python visualize.py
 
     - name: Commit CSV file
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add visitors_data.csv
+        git add index.html
         git commit -m "Update visitors data"
         git push
