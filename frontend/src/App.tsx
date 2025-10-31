@@ -21,7 +21,7 @@ function App() {
     sihlcity: true,
     puls5: true,
   })
-  const [timeRange, setTimeRange] = useState('all')
+  const [timeRange, setTimeRange] = useState('24h')
 
   if (loading) {
     return (
