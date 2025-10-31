@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 export interface Thresholds {
   stadelhofen: { yellow: number; red: number };
   stockerhof: { yellow: number; red: number };
@@ -7,25 +5,11 @@ export interface Thresholds {
   puls5: { yellow: number; red: number };
 }
 
-export const DEFAULT_THRESHOLDS: Thresholds = {
+export const THRESHOLDS: Thresholds = {
   stadelhofen: { yellow: 130, red: 180 },
   stockerhof: { yellow: 120, red: 200 },
   sihlcity: { yellow: 80, red: 150 },
   puls5: { yellow: 110, red: 190 },
-};
-
-export const useThresholds = () => {
-  const [thresholds, setThresholds] = useState<Thresholds>(DEFAULT_THRESHOLDS);
-
-  const updateThresholds = (newThresholds: Thresholds) => {
-    setThresholds(newThresholds);
-  };
-
-  const resetToDefaults = () => {
-    setThresholds(DEFAULT_THRESHOLDS);
-  };
-
-  return { thresholds, updateThresholds, resetToDefaults };
 };
 
 // Helper function to determine color based on value and thresholds
