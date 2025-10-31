@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export interface Thresholds {
   stadelhofen: { yellow: number; red: number };
@@ -7,47 +7,25 @@ export interface Thresholds {
   puls5: { yellow: number; red: number };
 }
 
-const DEFAULT_THRESHOLDS: Thresholds = {
-  stadelhofen: { yellow: 100, red: 180 },
+export const DEFAULT_THRESHOLDS: Thresholds = {
+  stadelhofen: { yellow: 130, red: 180 },
   stockerhof: { yellow: 120, red: 200 },
   sihlcity: { yellow: 80, red: 150 },
   puls5: { yellow: 110, red: 190 },
 };
 
-const STORAGE_KEY = 'fitnesspark_thresholds';
-
 export const useThresholds = () => {
   const [thresholds, setThresholds] = useState<Thresholds>(DEFAULT_THRESHOLDS);
-  const [loaded, setLoaded] = useState(false);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setThresholds(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to load thresholds:', e);
-        setThresholds(DEFAULT_THRESHOLDS);
-      }
-    } else {
-      setThresholds(DEFAULT_THRESHOLDS);
-    }
-    setLoaded(true);
-  }, []);
-
-  // Save to localStorage whenever thresholds change
   const updateThresholds = (newThresholds: Thresholds) => {
     setThresholds(newThresholds);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newThresholds));
   };
 
   const resetToDefaults = () => {
     setThresholds(DEFAULT_THRESHOLDS);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_THRESHOLDS));
   };
 
-  return { thresholds, updateThresholds, resetToDefaults, loaded };
+  return { thresholds, updateThresholds, resetToDefaults };
 };
 
 // Helper function to determine color based on value and thresholds

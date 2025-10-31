@@ -16,7 +16,7 @@ interface LocationSelection {
 
 function App() {
   const { data, loading, error } = useVisitorData()
-  const { thresholds, updateThresholds, resetToDefaults, loaded: thresholdsLoaded } = useThresholds()
+  const { thresholds, updateThresholds, resetToDefaults } = useThresholds()
   const [selectedLocations, setSelectedLocations] = useState<LocationSelection>({
     stadelhofen: true,
     stockerhof: true,
@@ -51,13 +51,11 @@ function App() {
             <h1>🏋️ FitnessPark Zurich - Live Occupancy</h1>
             <p>Real-time visitor data for 4 locations</p>
           </div>
-          {thresholdsLoaded && (
-            <ThresholdSettings
-              thresholds={thresholds}
-              onUpdate={updateThresholds}
-              onReset={resetToDefaults}
-            />
-          )}
+          <ThresholdSettings
+            thresholds={thresholds}
+            onUpdate={updateThresholds}
+            onReset={resetToDefaults}
+          />
         </div>
       </header>
 
