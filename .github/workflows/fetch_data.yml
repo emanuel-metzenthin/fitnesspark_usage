@@ -26,13 +26,15 @@ jobs:
     - name: Run Python script
       run: |
         python main.py
-        python visualize.py
+
+    - name: Copy CSV to frontend
+      run: |
+        cp visitors_data.csv frontend/public/visitors_data.csv
 
     - name: Commit CSV file
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add visitors_data.csv
-        git add index.html
-        git commit -m "Update visitors data"
-        git push
+        git add visitors_data.csv frontend/public/visitors_data.csv
+        git commit -m "Update visitors data" || true
+        git push || true
