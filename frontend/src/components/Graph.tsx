@@ -1,6 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { VisitorData } from '../hooks/useVisitorData';
+import type { Thresholds } from '../hooks/useThresholds';
 import { filterDataByTimeRange } from '../utils/dataUtils';
+import { getLineSegments } from '../utils/lineSegments';
 
 interface LocationSelection {
   stadelhofen: boolean;
@@ -15,6 +17,7 @@ interface GraphProps {
   data: VisitorData[];
   selectedLocations: LocationSelection;
   timeRange: string;
+  thresholds: Thresholds;
   focusedLocation: FocusedLocation;
 }
 
@@ -25,7 +28,7 @@ const locationConfig = {
   puls5: { label: 'Puls 5', defaultColor: '#f59e0b' },
 };
 
-export default function Graph({ data, selectedLocations, timeRange, focusedLocation }: GraphProps) {
+export default function Graph({ data, selectedLocations, timeRange, thresholds, focusedLocation }: GraphProps) {
   const filteredData = filterDataByTimeRange(data, timeRange);
 
   // Filter out entries with all nulls for cleaner display
@@ -35,30 +38,41 @@ export default function Graph({ data, selectedLocations, timeRange, focusedLocat
     )
   );
 
-  const getLineColor = (location: keyof typeof locationConfig, isFocused: boolean) => {
-    if (focusedLocation && !isFocused) {
-      return '#d1d5db'; // Gray out if not focused
-    }
-    return locationConfig[location].defaultColor;
-  };
-
-  const renderLine = (location: keyof typeof locationConfig) => {
+  const renderLineSegments = (location: keyof typeof locationConfig) => {
     const isFocused = focusedLocation === location || focusedLocation === null;
-    const stroke = getLineColor(location, isFocused);
+    const locationThresholds = thresholds[location];
 
-    return (
-      <Line
-        key={location}
-        type="monotone"
-        dataKey={location}
-        stroke={stroke}
-        name={locationConfig[location].label}
-        dot={false}
-        isAnimationActive={false}
-        strokeWidth={isFocused ? 3 : 2}
-        opacity={isFocused ? 1 : 0.3}
-      />
-    );
+    // Get segments with color transitions based on thresholds
+    const segments = getLineSegments(cleanData, location, locationThresholds);
+
+    return segments.map((segment, idx) => {
+      // Create a subset of data for this segment
+      const segmentData = cleanData.slice(segment.start, segment.end + 1);
+
+      // For the first point, we need to include the previous point if it exists
+      if (segment.start > 0) {
+        segmentData.unshift(cleanData[segment.start - 1]);
+      }
+
+      const color = isFocused ? segment.color : '#d1d5db';
+      const opacity = isFocused ? 1 : 0.3;
+      const strokeWidth = isFocused ? 3 : 2;
+
+      return (
+        <Line
+          key={`${location}-${idx}`}
+          type="monotone"
+          dataKey={location}
+          data={segmentData}
+          stroke={color}
+          dot={false}
+          isAnimationActive={false}
+          strokeWidth={strokeWidth}
+          opacity={opacity}
+          connectNulls={false}
+        />
+      );
+    });
   };
 
   return (
@@ -78,10 +92,10 @@ export default function Graph({ data, selectedLocations, timeRange, focusedLocat
             labelFormatter={(label) => `Time: ${label}`}
           />
           <Legend />
-          {selectedLocations.stadelhofen && renderLine('stadelhofen')}
-          {selectedLocations.stockerhof && renderLine('stockerhof')}
-          {selectedLocations.sihlcity && renderLine('sihlcity')}
-          {selectedLocations.puls5 && renderLine('puls5')}
+          {selectedLocations.stadelhofen && renderLineSegments('stadelhofen')}
+          {selectedLocations.stockerhof && renderLineSegments('stockerhof')}
+          {selectedLocations.sihlcity && renderLineSegments('sihlcity')}
+          {selectedLocations.puls5 && renderLineSegments('puls5')}
         </LineChart>
       </ResponsiveContainer>
       <p className="graph-hint">Click a stat card to focus on one location</p>
