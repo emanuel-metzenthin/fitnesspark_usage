@@ -170,11 +170,17 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-left: 4px solid;
   transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.focused {
+  box-shadow: 0 0 0 2px var(--primary), 0 4px 12px rgba(59, 130, 246, 0.3);
+  transform: translateY(-4px);
 }
 
 .stat-header {
@@ -232,6 +238,13 @@ body {
 .graph-container h2 {
   margin-bottom: 1.5rem;
   color: var(--secondary);
+}
+
+.graph-hint {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-light);
+  text-align: center;
 }
 
 /* Responsive */

@@ -1,8 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { VisitorData } from '../hooks/useVisitorData';
-import type { Thresholds } from '../hooks/useThresholds';
 import { filterDataByTimeRange } from '../utils/dataUtils';
-import { getOccupancyColor, getColorHex } from '../hooks/useThresholds';
 
 interface LocationSelection {
   stadelhofen: boolean;
@@ -11,21 +9,23 @@ interface LocationSelection {
   puls5: boolean;
 }
 
+type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | null;
+
 interface GraphProps {
   data: VisitorData[];
   selectedLocations: LocationSelection;
   timeRange: string;
-  thresholds: Thresholds;
+  focusedLocation: FocusedLocation;
 }
 
 const locationConfig = {
-  stadelhofen: { label: 'Stadelhofen' },
-  stockerhof: { label: 'Stockerhof' },
-  sihlcity: { label: 'Sihlcity' },
-  puls5: { label: 'Puls 5' },
+  stadelhofen: { label: 'Stadelhofen', defaultColor: '#3b82f6' },
+  stockerhof: { label: 'Stockerhof', defaultColor: '#ef4444' },
+  sihlcity: { label: 'Sihlcity', defaultColor: '#10b981' },
+  puls5: { label: 'Puls 5', defaultColor: '#f59e0b' },
 };
 
-export default function Graph({ data, selectedLocations, timeRange, thresholds }: GraphProps) {
+export default function Graph({ data, selectedLocations, timeRange, focusedLocation }: GraphProps) {
   const filteredData = filterDataByTimeRange(data, timeRange);
 
   // Filter out entries with all nulls for cleaner display
@@ -35,9 +35,35 @@ export default function Graph({ data, selectedLocations, timeRange, thresholds }
     )
   );
 
+  const getLineColor = (location: keyof typeof locationConfig, isFocused: boolean) => {
+    if (focusedLocation && !isFocused) {
+      return '#d1d5db'; // Gray out if not focused
+    }
+    return locationConfig[location].defaultColor;
+  };
+
+  const renderLine = (location: keyof typeof locationConfig) => {
+    const isFocused = focusedLocation === location || focusedLocation === null;
+    const stroke = getLineColor(location, isFocused);
+
+    return (
+      <Line
+        key={location}
+        type="monotone"
+        dataKey={location}
+        stroke={stroke}
+        name={locationConfig[location].label}
+        dot={false}
+        isAnimationActive={false}
+        strokeWidth={isFocused ? 3 : 2}
+        opacity={isFocused ? 1 : 0.3}
+      />
+    );
+  };
+
   return (
     <div className="graph-container">
-      <h2>Visitor Trends</h2>
+      <h2>Visitor Trends {focusedLocation && `- ${locationConfig[focusedLocation].label}`}</h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={cleanData} margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -52,68 +78,13 @@ export default function Graph({ data, selectedLocations, timeRange, thresholds }
             labelFormatter={(label) => `Time: ${label}`}
           />
           <Legend />
-          {selectedLocations.stadelhofen && (
-            <Line
-              type="monotone"
-              dataKey="stadelhofen"
-              stroke={getColorHex(getOccupancyColor(
-                cleanData[cleanData.length - 1]?.stadelhofen ?? null,
-                thresholds.stadelhofen.yellow,
-                thresholds.stadelhofen.red
-              ))}
-              name={`${locationConfig.stadelhofen.label}`}
-              dot={false}
-              isAnimationActive={false}
-              strokeWidth={2}
-            />
-          )}
-          {selectedLocations.stockerhof && (
-            <Line
-              type="monotone"
-              dataKey="stockerhof"
-              stroke={getColorHex(getOccupancyColor(
-                cleanData[cleanData.length - 1]?.stockerhof ?? null,
-                thresholds.stockerhof.yellow,
-                thresholds.stockerhof.red
-              ))}
-              name={`${locationConfig.stockerhof.label}`}
-              dot={false}
-              isAnimationActive={false}
-              strokeWidth={2}
-            />
-          )}
-          {selectedLocations.sihlcity && (
-            <Line
-              type="monotone"
-              dataKey="sihlcity"
-              stroke={getColorHex(getOccupancyColor(
-                cleanData[cleanData.length - 1]?.sihlcity ?? null,
-                thresholds.sihlcity.yellow,
-                thresholds.sihlcity.red
-              ))}
-              name={`${locationConfig.sihlcity.label}`}
-              dot={false}
-              isAnimationActive={false}
-              strokeWidth={2}
-            />
-          )}
-          {selectedLocations.puls5 && (
-            <Line
-              type="monotone"
-              dataKey="puls5"
-              stroke={getColorHex(getOccupancyColor(
-                cleanData[cleanData.length - 1]?.puls5 ?? null,
-                thresholds.puls5.yellow,
-                thresholds.puls5.red
-              ))}
-              name={`${locationConfig.puls5.label}`}
-              dot={false}
-              isAnimationActive={false}
-              strokeWidth={2}
-            />
-          )}
+          {selectedLocations.stadelhofen && renderLine('stadelhofen')}
+          {selectedLocations.stockerhof && renderLine('stockerhof')}
+          {selectedLocations.sihlcity && renderLine('sihlcity')}
+          {selectedLocations.puls5 && renderLine('puls5')}
         </LineChart>
       </ResponsiveContainer>
+      <p className="graph-hint">Click a stat card to focus on one location</p>
     </div>
   );
 }

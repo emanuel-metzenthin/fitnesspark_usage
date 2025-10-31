@@ -13,6 +13,8 @@ interface LocationSelection {
   puls5: boolean;
 }
 
+type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | null;
+
 function App() {
   const { data, loading, error } = useVisitorData()
   const [selectedLocations, setSelectedLocations] = useState<LocationSelection>({
@@ -21,6 +23,7 @@ function App() {
     sihlcity: true,
     puls5: true,
   })
+  const [focusedLocation, setFocusedLocation] = useState<FocusedLocation>(null)
   const [timeRange, setTimeRange] = useState('24h')
 
   if (loading) {
@@ -55,13 +58,19 @@ function App() {
         onTimeRangeChange={setTimeRange}
       />
 
-      <Stats data={data} selectedLocations={selectedLocations} thresholds={THRESHOLDS} />
+      <Stats
+        data={data}
+        selectedLocations={selectedLocations}
+        thresholds={THRESHOLDS}
+        focusedLocation={focusedLocation}
+        onLocationClick={setFocusedLocation}
+      />
 
       <Graph
         data={data}
         selectedLocations={selectedLocations}
         timeRange={timeRange}
-        thresholds={THRESHOLDS}
+        focusedLocation={focusedLocation}
       />
     </div>
   )

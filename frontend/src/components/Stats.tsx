@@ -10,13 +10,17 @@ interface LocationSelection {
   puls5: boolean;
 }
 
+type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | null;
+
 interface StatsProps {
   data: VisitorData[];
   selectedLocations: LocationSelection;
   thresholds: Thresholds;
+  focusedLocation: FocusedLocation;
+  onLocationClick: (location: FocusedLocation) => void;
 }
 
-export default function Stats({ data, selectedLocations, thresholds }: StatsProps) {
+export default function Stats({ data, selectedLocations, thresholds, focusedLocation, onLocationClick }: StatsProps) {
   const getLocationStats = (location: keyof Omit<VisitorData, 'timestamp'>) => {
     const values = data
       .map(d => d[location])
@@ -57,8 +61,18 @@ export default function Stats({ data, selectedLocations, thresholds }: StatsProp
         const occupancyColor = getOccupancyColor(stats.current, locThresholds.yellow, locThresholds.red);
         const borderColor = colorMap[occupancyColor];
 
+        const isFocused = focusedLocation === loc.key;
+        const handleClick = () => {
+          onLocationClick(isFocused ? null : (loc.key as FocusedLocation));
+        };
+
         return (
-          <div key={loc.key} className="stat-card" style={{ borderLeftColor: borderColor }}>
+          <div
+            key={loc.key}
+            className={`stat-card ${isFocused ? 'focused' : ''}`}
+            style={{ borderLeftColor: borderColor }}
+            onClick={handleClick}
+          >
             <div className="stat-header">
               <h3>{loc.label}</h3>
               <div className="stat-value" style={{ color: borderColor }}>
