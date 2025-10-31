@@ -1,6 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { VisitorData } from '../hooks/useVisitorData';
+import type { Thresholds } from '../hooks/useThresholds';
 import { filterDataByTimeRange } from '../utils/dataUtils';
+import { getOccupancyColor, getColorHex } from '../hooks/useThresholds';
 
 interface LocationSelection {
   stadelhofen: boolean;
@@ -13,16 +15,17 @@ interface GraphProps {
   data: VisitorData[];
   selectedLocations: LocationSelection;
   timeRange: string;
+  thresholds: Thresholds;
 }
 
 const locationConfig = {
-  stadelhofen: { color: '#3b82f6', label: 'Stadelhofen' },
-  stockerhof: { color: '#ef4444', label: 'Stockerhof' },
-  sihlcity: { color: '#10b981', label: 'Sihlcity' },
-  puls5: { color: '#f59e0b', label: 'Puls 5' },
+  stadelhofen: { label: 'Stadelhofen' },
+  stockerhof: { label: 'Stockerhof' },
+  sihlcity: { label: 'Sihlcity' },
+  puls5: { label: 'Puls 5' },
 };
 
-export default function Graph({ data, selectedLocations, timeRange }: GraphProps) {
+export default function Graph({ data, selectedLocations, timeRange, thresholds }: GraphProps) {
   const filteredData = filterDataByTimeRange(data, timeRange);
 
   // Filter out entries with all nulls for cleaner display
@@ -53,40 +56,60 @@ export default function Graph({ data, selectedLocations, timeRange }: GraphProps
             <Line
               type="monotone"
               dataKey="stadelhofen"
-              stroke={locationConfig.stadelhofen.color}
-              name={locationConfig.stadelhofen.label}
+              stroke={getColorHex(getOccupancyColor(
+                cleanData[cleanData.length - 1]?.stadelhofen ?? null,
+                thresholds.stadelhofen.yellow,
+                thresholds.stadelhofen.red
+              ))}
+              name={`${locationConfig.stadelhofen.label}`}
               dot={false}
               isAnimationActive={false}
+              strokeWidth={2}
             />
           )}
           {selectedLocations.stockerhof && (
             <Line
               type="monotone"
               dataKey="stockerhof"
-              stroke={locationConfig.stockerhof.color}
-              name={locationConfig.stockerhof.label}
+              stroke={getColorHex(getOccupancyColor(
+                cleanData[cleanData.length - 1]?.stockerhof ?? null,
+                thresholds.stockerhof.yellow,
+                thresholds.stockerhof.red
+              ))}
+              name={`${locationConfig.stockerhof.label}`}
               dot={false}
               isAnimationActive={false}
+              strokeWidth={2}
             />
           )}
           {selectedLocations.sihlcity && (
             <Line
               type="monotone"
               dataKey="sihlcity"
-              stroke={locationConfig.sihlcity.color}
-              name={locationConfig.sihlcity.label}
+              stroke={getColorHex(getOccupancyColor(
+                cleanData[cleanData.length - 1]?.sihlcity ?? null,
+                thresholds.sihlcity.yellow,
+                thresholds.sihlcity.red
+              ))}
+              name={`${locationConfig.sihlcity.label}`}
               dot={false}
               isAnimationActive={false}
+              strokeWidth={2}
             />
           )}
           {selectedLocations.puls5 && (
             <Line
               type="monotone"
               dataKey="puls5"
-              stroke={locationConfig.puls5.color}
-              name={locationConfig.puls5.label}
+              stroke={getColorHex(getOccupancyColor(
+                cleanData[cleanData.length - 1]?.puls5 ?? null,
+                thresholds.puls5.yellow,
+                thresholds.puls5.red
+              ))}
+              name={`${locationConfig.puls5.label}`}
               dot={false}
               isAnimationActive={false}
+              strokeWidth={2}
             />
           )}
         </LineChart>

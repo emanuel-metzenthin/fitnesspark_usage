@@ -1,5 +1,7 @@
 import type { VisitorData } from '../hooks/useVisitorData';
-import { Users, TrendingUp, Clock } from 'lucide-react';
+import type { Thresholds } from '../hooks/useThresholds';
+import { TrendingUp, Clock } from 'lucide-react';
+import { getOccupancyColor } from '../hooks/useThresholds';
 
 interface LocationSelection {
   stadelhofen: boolean;
@@ -11,9 +13,10 @@ interface LocationSelection {
 interface StatsProps {
   data: VisitorData[];
   selectedLocations: LocationSelection;
+  thresholds: Thresholds;
 }
 
-export default function Stats({ data, selectedLocations }: StatsProps) {
+export default function Stats({ data, selectedLocations, thresholds }: StatsProps) {
   const getLocationStats = (location: keyof Omit<VisitorData, 'timestamp'>) => {
     const values = data
       .map(d => d[location])
@@ -29,11 +32,18 @@ export default function Stats({ data, selectedLocations }: StatsProps) {
   };
 
   const locations = [
-    { key: 'stadelhofen', label: 'Stadelhofen', color: '#3b82f6' },
-    { key: 'stockerhof', label: 'Stockerhof', color: '#ef4444' },
-    { key: 'sihlcity', label: 'Sihlcity', color: '#10b981' },
-    { key: 'puls5', label: 'Puls 5', color: '#f59e0b' },
+    { key: 'stadelhofen', label: 'Stadelhofen' },
+    { key: 'stockerhof', label: 'Stockerhof' },
+    { key: 'sihlcity', label: 'Sihlcity' },
+    { key: 'puls5', label: 'Puls 5' },
   ];
+
+  const colorMap = {
+    green: '#10b981',
+    yellow: '#f59e0b',
+    red: '#ef4444',
+    gray: '#9ca3af',
+  };
 
   return (
     <div className="stats-container">
@@ -43,12 +53,20 @@ export default function Stats({ data, selectedLocations }: StatsProps) {
         const stats = getLocationStats(loc.key as keyof Omit<VisitorData, 'timestamp'>);
         if (!stats) return null;
 
+        const locThresholds = thresholds[loc.key as keyof Thresholds];
+        const occupancyColor = getOccupancyColor(stats.current, locThresholds.yellow, locThresholds.red);
+        const borderColor = colorMap[occupancyColor];
+
         return (
-          <div key={loc.key} className="stat-card" style={{ borderLeftColor: loc.color }}>
+          <div key={loc.key} className="stat-card" style={{ borderLeftColor: borderColor }}>
             <div className="stat-header">
               <h3>{loc.label}</h3>
-              <div className="stat-value">
-                <Users size={20} />
+              <div className="stat-value" style={{ color: borderColor }}>
+                <span className="occupancy-indicator" style={{ backgroundColor: borderColor }}>
+                  {occupancyColor === 'green' && '🟢'}
+                  {occupancyColor === 'yellow' && '🟡'}
+                  {occupancyColor === 'red' && '🔴'}
+                </span>
                 <span>{stats.current}</span>
               </div>
             </div>
