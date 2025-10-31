@@ -70,7 +70,6 @@ function App() {
         data={data}
         selectedLocations={selectedLocations}
         timeRange={timeRange}
-        thresholds={THRESHOLDS}
         focusedLocation={focusedLocation}
       />
     </div>
