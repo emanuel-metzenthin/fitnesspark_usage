@@ -1,5 +1,6 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import type { VisitorData } from '../hooks/useVisitorData';
+import type { Thresholds } from '../hooks/useThresholds';
 import { filterDataByTimeRange } from '../utils/dataUtils';
 
 interface LocationSelection {
@@ -16,6 +17,7 @@ interface GraphProps {
   selectedLocations: LocationSelection;
   timeRange: string;
   focusedLocation: FocusedLocation;
+  thresholds: Thresholds;
 }
 
 const locationConfig = {
@@ -25,7 +27,7 @@ const locationConfig = {
   puls5: { label: 'Puls 5', defaultColor: '#f59e0b' },
 };
 
-export default function Graph({ data, selectedLocations, timeRange, focusedLocation }: GraphProps) {
+export default function Graph({ data, selectedLocations, timeRange, focusedLocation, thresholds }: GraphProps) {
   const filteredData = filterDataByTimeRange(data, timeRange);
 
   // Filter out entries with all nulls for cleaner display
@@ -78,6 +80,25 @@ export default function Graph({ data, selectedLocations, timeRange, focusedLocat
             labelFormatter={(label) => `Time: ${label}`}
           />
           <Legend />
+
+          {/* Show threshold reference lines when a location is focused */}
+          {focusedLocation && (
+            <>
+              <ReferenceLine
+                y={thresholds[focusedLocation].yellow}
+                stroke="#f59e0b"
+                strokeDasharray="5 5"
+                label={{ value: 'Yellow', position: 'right', fill: '#f59e0b', fontSize: 12 }}
+              />
+              <ReferenceLine
+                y={thresholds[focusedLocation].red}
+                stroke="#ef4444"
+                strokeDasharray="5 5"
+                label={{ value: 'Red', position: 'right', fill: '#ef4444', fontSize: 12 }}
+              />
+            </>
+          )}
+
           {selectedLocations.stadelhofen && renderLine('stadelhofen')}
           {selectedLocations.stockerhof && renderLine('stockerhof')}
           {selectedLocations.sihlcity && renderLine('sihlcity')}
