@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useVisitorData } from './hooks/useVisitorData'
+import { useLiveVisitors } from './hooks/useLiveVisitors'
 import { THRESHOLDS } from './hooks/useThresholds'
 import Graph from './components/Graph'
 import Stats from './components/Stats'
@@ -17,6 +18,7 @@ type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | nul
 
 function App() {
   const { data, loading, error } = useVisitorData()
+  const { data: liveData, loading: liveLoading } = useLiveVisitors()
   const [selectedLocations, setSelectedLocations] = useState<LocationSelection>({
     stadelhofen: true,
     stockerhof: true,
@@ -60,6 +62,8 @@ function App() {
 
       <Stats
         data={data}
+        liveData={liveData}
+        liveLoading={liveLoading}
         selectedLocations={selectedLocations}
         thresholds={THRESHOLDS}
         focusedLocation={focusedLocation}

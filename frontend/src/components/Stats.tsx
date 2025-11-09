@@ -1,6 +1,7 @@
 import type { VisitorData } from '../hooks/useVisitorData';
+import type { LiveVisitorData } from '../hooks/useLiveVisitors';
 import type { Thresholds } from '../hooks/useThresholds';
-import { TrendingUp, Clock } from 'lucide-react';
+import { TrendingUp, Clock, Zap } from 'lucide-react';
 import { getOccupancyColor } from '../hooks/useThresholds';
 
 interface LocationSelection {
@@ -14,13 +15,15 @@ type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | nul
 
 interface StatsProps {
   data: VisitorData[];
+  liveData: LiveVisitorData | null;
+  liveLoading: boolean;
   selectedLocations: LocationSelection;
   thresholds: Thresholds;
   focusedLocation: FocusedLocation;
   onLocationClick: (location: FocusedLocation) => void;
 }
 
-export default function Stats({ data, selectedLocations, thresholds, focusedLocation, onLocationClick }: StatsProps) {
+export default function Stats({ data, liveData, liveLoading, selectedLocations, thresholds, focusedLocation, onLocationClick }: StatsProps) {
   const getLocationStats = (location: keyof Omit<VisitorData, 'timestamp'>) => {
     const values = data
       .map(d => d[location])
@@ -33,6 +36,10 @@ export default function Stats({ data, selectedLocations, thresholds, focusedLoca
     const max = Math.max(...values);
 
     return { current, average, max };
+  };
+
+  const getLiveVisitorCount = (location: keyof Omit<LiveVisitorData, 'timestamp'>) => {
+    return liveData?.[location] ?? null;
   };
 
   const locations = [
@@ -57,8 +64,11 @@ export default function Stats({ data, selectedLocations, thresholds, focusedLoca
         const stats = getLocationStats(loc.key as keyof Omit<VisitorData, 'timestamp'>);
         if (!stats) return null;
 
+        const liveCount = getLiveVisitorCount(loc.key as keyof Omit<LiveVisitorData, 'timestamp'>);
+        const displayCount = liveCount !== null ? liveCount : stats.current;
+
         const locThresholds = thresholds[loc.key as keyof Thresholds];
-        const occupancyColor = getOccupancyColor(stats.current, locThresholds.yellow, locThresholds.red);
+        const occupancyColor = getOccupancyColor(displayCount, locThresholds.yellow, locThresholds.red);
         const borderColor = colorMap[occupancyColor];
 
         const isFocused = focusedLocation === loc.key;
@@ -81,7 +91,12 @@ export default function Stats({ data, selectedLocations, thresholds, focusedLoca
                   {occupancyColor === 'yellow' && '🟡'}
                   {occupancyColor === 'red' && '🔴'}
                 </span>
-                <span>{stats.current}</span>
+                <span>{displayCount}</span>
+                {liveCount !== null && (
+                  <span className="live-indicator" title="Live data from API">
+                    {liveLoading ? '⟳' : '●'}
+                  </span>
+                )}
               </div>
             </div>
             <div className="stat-details">
@@ -93,6 +108,12 @@ export default function Stats({ data, selectedLocations, thresholds, focusedLoca
                 <Clock size={16} />
                 <span>Peak: {stats.max}</span>
               </div>
+              {liveCount !== null && (
+                <div className="stat-item live-badge">
+                  <Zap size={16} />
+                  <span>Live</span>
+                </div>
+              )}
             </div>
           </div>
         );

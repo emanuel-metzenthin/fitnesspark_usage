@@ -6,9 +6,9 @@ export interface Thresholds {
 }
 
 export const THRESHOLDS: Thresholds = {
-  stadelhofen: { yellow: 130, red: 180 },
-  stockerhof: { yellow: 120, red: 200 },
-  sihlcity: { yellow: 80, red: 150 },
+  stadelhofen: { yellow: 110, red: 150 },
+  stockerhof: { yellow: 120, red: 210 },
+  sihlcity: { yellow: 120, red: 160 },
   puls5: { yellow: 110, red: 190 },
 };
 

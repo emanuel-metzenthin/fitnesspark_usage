@@ -1,0 +1,11 @@
+{
+  "name": "fitnesspark-usage",
+  "version": "1.0.0",
+  "description": "FitnessPark Zurich real-time occupancy tracker",
+  "private": true,
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
+  },
+  "devDependencies": {}
+}

@@ -295,3 +295,29 @@ body {
   border-radius: 50%;
   font-size: 1rem;
 }
+
+/* Live Indicator */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  margin-left: 0.25rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.live-indicator[title="Live data from API"]:before {
+  content: '';
+  display: none;
+}
+
+/* Live Badge */
+.live-badge {
+  color: #ef4444;
+  font-weight: 600;
+}
