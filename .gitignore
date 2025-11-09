@@ -39,3 +39,4 @@ wheels/
 fix.py
 index.html
 !frontend/index.html
+.vercel
