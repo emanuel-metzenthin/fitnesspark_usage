@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { chromium } from 'playwright';
-import { list, put, get } from '@vercel/blob';
+import { put, head, del } from '@vercel/blob';
 
 
 interface VisitorResponse {
@@ -83,28 +83,30 @@ export async function GET(request: NextRequest) {
     try {
       const csvFileName = 'visitors_data.csv';
 
-      // Try to get existing CSV file
+      // Prepare new row
+      const newRow = `${results.timestamp},${results.stadelhofen},${results.stockerhof},${results.sihlcity},${results.puls5}\n`;
+
+      // Try to get existing file and append
       let csvContent = '';
       try {
-        const existingBlob = await get(csvFileName);
-        if (existingBlob) {
-          csvContent = await existingBlob.text();
+        const blobInfo = await head(csvFileName);
+        if (blobInfo) {
+
+          const response = await fetch(blobInfo.url);
+          csvContent = await response.text();
         }
       } catch (error) {
         console.log('CSV file does not exist yet, creating new one');
       }
-
-      // Append new row
-      const newRow = `${results.timestamp},${results.stadelhofen},${results.stockerhof},${results.sihlcity},${results.puls5}\n`;
-      csvContent += newRow;
-
-      // Upload updated CSV to Blob Storage
-      await put(csvFileName, csvContent, {
+      
+      console.log('Existing CSV content length:', (csvContent + newRow).length);
+      await del(csvFileName);
+      await put(csvFileName, csvContent + newRow, {
         contentType: 'text/csv',
         access: 'public',
       });
 
-      console.log('Visitor data saved to Blob Storage');
+      console.log(`Visitor data added to CSV`);
     } catch (error) {
       console.error('Error saving to Blob Storage:', error);
     }

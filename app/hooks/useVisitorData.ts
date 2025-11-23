@@ -25,13 +25,14 @@ export const useVisitorData = (): ParsedData => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/visitors_data.csv');
+        // Fetch from Vercel Blob storage
+        const response = await fetch('/api/blob-data');
         const text = await response.text();
         const lines = text.trim().split('\n');
 
         const parsed: VisitorData[] = [];
 
-        for (let i = 1; i < lines.length; i++) {
+        for (let i = 0; i < lines.length; i++) {
           const parts = lines[i].split(',');
           if (parts.length < 5) continue;
 
