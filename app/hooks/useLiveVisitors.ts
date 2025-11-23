@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 
 export interface LiveVisitorData {
@@ -15,9 +17,12 @@ interface UseLiveVisitorsReturn {
   refetch: () => Promise<void>;
 }
 
-const API_URL = import.meta.env.PROD
-  ? 'https://fitnesspark-dashboard.vercel.app/api/visitors'
-  : `${window.location.protocol}//${window.location.hostname}:3000/api/visitors`;
+const getApiUrl = () => {
+  if (typeof window === 'undefined') {
+    return 'http://localhost:3000/api/visitors';
+  }
+  return `${window.location.protocol}//${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}/api/visitors`;
+};
 
 export function useLiveVisitors(): UseLiveVisitorsReturn {
   const [data, setData] = useState<LiveVisitorData | null>(null);
@@ -29,7 +34,7 @@ export function useLiveVisitors(): UseLiveVisitorsReturn {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(API_URL, {
+      const response = await fetch(getApiUrl(), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

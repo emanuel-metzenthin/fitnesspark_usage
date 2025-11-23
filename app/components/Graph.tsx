@@ -1,7 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
-import type { VisitorData } from '../hooks/useVisitorData';
-import type { Thresholds } from '../hooks/useThresholds';
-import { filterDataByTimeRange } from '../utils/dataUtils';
+import type { VisitorData } from '@/app/hooks/useVisitorData';
+import type { Thresholds } from '@/app/hooks/useThresholds';
+import { filterDataByTimeRange } from '@/app/utils/dataUtils';
 
 interface LocationSelection {
   stadelhofen: boolean;

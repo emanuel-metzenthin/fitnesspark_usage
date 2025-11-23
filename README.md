@@ -4,7 +4,7 @@ A modern, interactive web dashboard for tracking real-time visitor occupancy acr
 
 ![Dashboard Preview](https://img.shields.io/badge/Status-Active-brightgreen)
 ![React](https://img.shields.io/badge/React-19.1-blue)
-![Vite](https://img.shields.io/badge/Vite-7.1-purple)
+![Next.js](https://img.shields.io/badge/Next.js-15.1-black)
 
 ## Features
 
@@ -43,39 +43,56 @@ Visit the live dashboard: https://fitnesspark-dashboard.vercel.app
 git clone https://github.com/yourusername/fitnesspark_usage
 cd fitnesspark_usage
 
-# Install frontend dependencies
-npm install --prefix frontend
+# Install dependencies
+npm install
 
 # Start development server
-npm run dev --prefix frontend
+npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at `http://localhost:3000`
 
 ### Build for Production
 
 ```bash
-npm run build --prefix frontend
+npm run build
+
+# Start production server
+npm start
 ```
 
 ## Project Structure
 
 ```
 fitnesspark_usage/
-├── main.py                 # Selenium web scraper
-├── visitors_data.csv       # Visitor counts dataset
+├── app/                              # Next.js app directory
+│   ├── components/                   # React components
+│   │   ├── Filters.tsx              # Location and time range filters
+│   │   ├── Graph.tsx                # Interactive visitor chart
+│   │   └── Stats.tsx                # Occupancy statistics cards
+│   ├── hooks/                        # Custom React hooks
+│   │   ├── useVisitorData.ts        # Load historical CSV data
+│   │   ├── useLiveVisitors.ts       # Fetch real-time API data
+│   │   └── useThresholds.ts         # Manage occupancy thresholds
+│   ├── utils/                        # Utility functions
+│   │   └── dataUtils.ts             # Data filtering by time range
+│   ├── api/
+│   │   └── visitors/
+│   │       └── route.ts             # API endpoint for live visitor counts
+│   ├── globals.css                   # Global styles
+│   ├── layout.tsx                    # Root layout
+│   └── page.tsx                      # Home page
+├── public/
+│   └── visitors_data.csv             # Historical visitor data
+├── main.py                           # Selenium web scraper
+├── visitors_data.csv                 # Visitor counts dataset
 ├── .github/workflows/
-│   └── fetch_data.yml     # GitHub Actions scheduled task
-└── frontend/
-    ├── src/
-    │   ├── components/    # React components
-    │   ├── hooks/         # Custom hooks
-    │   ├── utils/         # Utility functions
-    │   └── App.tsx        # Main component
-    ├── public/
-    │   └── visitors_data.csv  # Data for the frontend
-    ├── vite.config.ts     # Vite configuration
-    └── vercel.json        # Vercel deployment config
+│   └── fetch_data.yml               # GitHub Actions scheduled task
+├── next.config.ts                    # Next.js configuration
+├── tsconfig.json                     # TypeScript configuration
+├── eslint.config.js                  # ESLint configuration
+├── vercel.json                       # Vercel deployment config
+└── package.json                      # Project dependencies and scripts
 ```
 
 ## Data Sources
@@ -92,18 +109,20 @@ Data is fetched from the official FitnessPark website every 15 minutes.
 
 ### Frontend
 - **React 19** - UI framework
-- **Vite** - Build tool & dev server
+- **Next.js 15** - React framework with App Router
 - **Recharts** - Interactive charting library
 - **Lucide React** - Icon library
 - **TypeScript** - Type safety
 
-### Backend
-- **Python** - Data collection
+### Backend & API
+- **Next.js API Routes** - Built-in serverless functions
+- **Vercel Functions** - Runs parallel to frontend
+- **Python** - Data collection (scheduled scraper)
 - **Selenium** - Web scraping
 - **GitHub Actions** - Automation
 
 ### Deployment
-- **Vercel** - Frontend hosting
+- **Vercel** - Full-stack hosting (frontend + API)
 - **GitHub** - Data storage & CI/CD
 
 ## Configuration
@@ -178,6 +197,30 @@ Contributions are welcome! Please:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Migration from Vite to Next.js
+
+This project was recently migrated from Vite to Next.js. Key improvements:
+
+### Benefits
+- **Unified Full-Stack**: Frontend and API in one framework
+- **Vercel Functions**: API runs parallel to frontend on Vercel
+- **Better Performance**: Built-in optimizations and code splitting
+- **Improved DX**: Integrated development experience with hot module replacement
+- **Simplified Deployment**: Single build output for both frontend and API
+
+### What Changed
+- Frontend moved from `frontend/src` to `app/` directory
+- API endpoint moved from `api/visitors.ts` to `app/api/visitors/route.ts`
+- Build tool: Vite → Next.js
+- Dev server: `npm run dev` (now runs on port 3000)
+- Configuration: `vercel.json` now uses Next.js framework configuration
+
+### Backwards Compatibility
+- All frontend components remain functionally identical
+- API endpoint behavior is unchanged
+- CSV data format remains the same
+- Historical data fully preserved
 
 ## Disclaimer
 

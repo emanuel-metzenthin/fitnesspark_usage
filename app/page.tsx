@@ -1,11 +1,12 @@
-import { useState } from 'react'
-import { useVisitorData } from './hooks/useVisitorData'
-import { useLiveVisitors } from './hooks/useLiveVisitors'
-import { THRESHOLDS } from './hooks/useThresholds'
-import Graph from './components/Graph'
-import Stats from './components/Stats'
-import Filters from './components/Filters'
-import './App.css'
+'use client';
+
+import { useState } from 'react';
+import { useVisitorData } from '@/app/hooks/useVisitorData';
+import { useLiveVisitors } from '@/app/hooks/useLiveVisitors';
+import { THRESHOLDS } from '@/app/hooks/useThresholds';
+import Graph from '@/app/components/Graph';
+import Stats from '@/app/components/Stats';
+import Filters from '@/app/components/Filters';
 
 interface LocationSelection {
   stadelhofen: boolean;
@@ -16,17 +17,17 @@ interface LocationSelection {
 
 type FocusedLocation = 'stadelhofen' | 'stockerhof' | 'sihlcity' | 'puls5' | null;
 
-function App() {
-  const { data, loading, error } = useVisitorData()
-  const { data: liveData, loading: liveLoading } = useLiveVisitors()
+export default function Home() {
+  const { data, loading, error } = useVisitorData();
+  const { data: liveData, loading: liveLoading } = useLiveVisitors();
   const [selectedLocations, setSelectedLocations] = useState<LocationSelection>({
     stadelhofen: true,
     stockerhof: true,
     sihlcity: true,
     puls5: true,
-  })
-  const [focusedLocation, setFocusedLocation] = useState<FocusedLocation>(null)
-  const [timeRange, setTimeRange] = useState('24h')
+  });
+  const [focusedLocation, setFocusedLocation] = useState<FocusedLocation>(null);
+  const [timeRange, setTimeRange] = useState('24h');
 
   if (loading) {
     return (
@@ -34,7 +35,7 @@ function App() {
         <div className="spinner"></div>
         <p>Loading gym visitor data...</p>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -43,7 +44,7 @@ function App() {
         <h2>Error loading data</h2>
         <p>{error}</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -78,7 +79,5 @@ function App() {
         thresholds={THRESHOLDS}
       />
     </div>
-  )
+  );
 }
-
-export default App

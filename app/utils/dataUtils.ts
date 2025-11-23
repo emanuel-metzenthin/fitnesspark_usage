@@ -1,4 +1,4 @@
-import type { VisitorData } from '../hooks/useVisitorData';
+import type { VisitorData } from '@/app/hooks/useVisitorData';
 
 export const filterDataByTimeRange = (data: VisitorData[], timeRange: string): VisitorData[] => {
   if (timeRange === 'all') return data;

@@ -1,8 +1,10 @@
-import type { VisitorData } from '../hooks/useVisitorData';
-import type { LiveVisitorData } from '../hooks/useLiveVisitors';
-import type { Thresholds } from '../hooks/useThresholds';
+'use client';
+
+import type { VisitorData } from '@/app/hooks/useVisitorData';
+import type { LiveVisitorData } from '@/app/hooks/useLiveVisitors';
+import type { Thresholds } from '@/app/hooks/useThresholds';
 import { TrendingUp, Clock, Zap } from 'lucide-react';
-import { getOccupancyColor } from '../hooks/useThresholds';
+import { getOccupancyColor } from '@/app/hooks/useThresholds';
 
 interface LocationSelection {
   stadelhofen: boolean;
